@@ -46,7 +46,8 @@ function [conf] = repeatability_get_config()
   conf.jpeg.legend_location = 'SouthEast';
   conf.jpeg.name_version = 'short_name';
   
-  conf.blur.params = [0 1 2 3 4 8];
+  conf.blur.params = [0.3 0.6 1 2 3 0 0.2 4 8];
+  conf.blur.display_points = [3 4 5 6 8 9];
   conf.blur.func = @repeatability_blur;
   conf.blur.img_id = '%s_blur%d';
   conf.blur.xlabel = 'sigma in pixels';
