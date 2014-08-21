@@ -11,7 +11,8 @@ Plot evaluation curves
 
 1. Get the data that you want to use from the [Project Page](http://www.mpi-inf.mpg.de/departments/computer-vision-and-multimodal-computing/research/object-recognition-and-scene-understanding/how-good-are-detection-proposals-really/).
 2. Edit `get_config.m` to point to the right locations for images, candidates and so on.
-3. Run `plot_recall_voc07.m`, curves will be in the figures subdirectory.
+3. Make sure you either start matlab in the root directory of the code or run `startup.m` manually once.
+4. Run `plot_recall_voc07.m`, curves will be in the figures subdirectory.
 
 
 Benchmark your own method
