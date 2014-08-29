@@ -6,4 +6,5 @@ if ~isdeployed()
   addpath(fullfile(proposal_root_path, 'util'));
   addpath(fullfile(proposal_root_path, 'shared'));
   addpath(fullfile(proposal_root_path, 'recall'));
+  addpath(fullfile(proposal_root_path, 'baselines'));
 end
