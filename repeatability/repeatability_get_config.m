@@ -45,6 +45,7 @@ function [conf] = repeatability_get_config()
   conf.jpeg.xticklabels = {'5', '20', '40', '60', '80', '100', 'lossless'};
   conf.jpeg.legend_location = 'SouthEast';
   conf.jpeg.name_version = 'short_name';
+  conf.jpeg.xreverse = true;
   
   conf.blur.params = [0.3 0.6 1 2 3 0 0.2 4 8];
   conf.blur.display_points = [3 4 5 6 8 9];
