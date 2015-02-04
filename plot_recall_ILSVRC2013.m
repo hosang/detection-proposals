@@ -8,10 +8,13 @@ function plot_recall_ILSVRC2013()
   
   val = load('data/ILSVRC2013_val_annotations.mat');
   methods = get_method_configs();
-  methods = methods([3 4 6 8 9 11 12 13 14 15 16]);
+  methods([14 16 19:24]) = [];
   
   valid_methods = compute_best_candidates(val, methods);
   methods = methods(valid_methods);
+  
+  plot_legend(methods);
+  printpdf('figures/imagenet_recall_legend.pdf');
   
   fprintf('\n\n');
   for i = 1:numel(methods)
@@ -19,7 +22,7 @@ function plot_recall_ILSVRC2013()
   end
 
   fh = figure;
-  plot_overlap_recall_curve({methods.best_imagenet_candidates_file}, methods, 100, fh, true, 'NorthEast');
+  plot_overlap_recall_curve({methods.best_imagenet_candidates_file}, methods, 100, fh, true, 'none');
   hei = 10;
   wid = 10;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
@@ -27,7 +30,7 @@ function plot_recall_ILSVRC2013()
   printpdf('figures/imagenet_recall_100.pdf')
   
   fh = figure;
-  plot_overlap_recall_curve({methods.best_imagenet_candidates_file}, methods, 1000, fh, false, 'NorthEast');
+  plot_overlap_recall_curve({methods.best_imagenet_candidates_file}, methods, 1000, fh, false, 'none');
   hei = 10;
   wid = 10;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
@@ -35,15 +38,7 @@ function plot_recall_ILSVRC2013()
   printpdf('figures/imagenet_recall_1000.pdf')
 
   fh = figure;
-  plot_overlap_recall_curve({methods.best_imagenet_candidates_file}, methods, 1000, fh, true, 'NorthEast');
-  hei = 10;
-  wid = 10;
-  set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
-  set(gcf, 'PaperPositionMode','auto');
-  printpdf('figures/imagenet_recall_1000_with_labels.pdf')
-
-  fh = figure;
-  plot_overlap_recall_curve({methods.best_imagenet_candidates_file}, methods, 10000, fh, false, 'NorthEast');
+  plot_overlap_recall_curve({methods.best_imagenet_candidates_file}, methods, 10000, fh, false, 'none');
   hei = 10;
   wid = 10;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);

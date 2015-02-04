@@ -8,26 +8,23 @@ function plot_recall_voc07()
 
   testset = load('data/pascal_voc07_test_annotations.mat');
   methods = get_method_configs();
+  methods([14 16 19:24]) = [];
   
   compute_best_candidates(testset, methods);
+  
+  plot_legend(methods);
+  printpdf('figures/recall_legend.pdf');
 
   fh = figure;
-  plot_overlap_recall_curve({methods.best_voc07_candidates_file}, methods, 100, fh, true, 'NorthEast');
+  plot_overlap_recall_curve({methods.best_voc07_candidates_file}, methods, 100, fh, true, 'none');
   hei = 10;
   wid = 10;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
   set(gcf, 'PaperPositionMode','auto');
   printpdf('figures/recall_100.pdf')
   
-  plot_overlap_recall_curve({methods.best_voc07_candidates_file}, methods, 100, fh, true, 'NorthEast', true);
-  hei = 10;
-  wid = 10;
-  set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
-  set(gcf, 'PaperPositionMode','auto');
-  printpdf('figures/recall_100_long_names.pdf')
-  
   fh = figure;
-  plot_overlap_recall_curve({methods.best_voc07_candidates_file}, methods, 1000, fh, false, 'NorthEast');
+  plot_overlap_recall_curve({methods.best_voc07_candidates_file}, methods, 1000, fh, false, 'none');
   hei = 10;
   wid = 10;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
@@ -35,7 +32,7 @@ function plot_recall_voc07()
   printpdf('figures/recall_1000.pdf')
   
   fh = figure;
-  plot_overlap_recall_curve({methods.best_voc07_candidates_file}, methods, 10000, fh, false, 'SouthWest');
+  plot_overlap_recall_curve({methods.best_voc07_candidates_file}, methods, 10000, fh, false, 'none');
   hei = 10;
   wid = 10;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);

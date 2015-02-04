@@ -3,7 +3,7 @@ function printpdf(fname)
 
 set(gca, 'LooseInset', get(gca, 'TightInset'));
 fname = [regexprep(fname, '^(.*)\.pdf$', '$1'), '.eps'];
-print('-depsc', fname) ;
+print('-depsc', fname);
 if ~system(['epstopdf ', fname])
   system(['rm ', fname]);
 end
