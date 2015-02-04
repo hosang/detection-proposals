@@ -56,11 +56,10 @@ function [conf] = repeatability_get_config()
   conf.blur.name_version = 'short_name';
   
   function y = mylog(x)
-    if x <= 0
-      y = -1;
-    else
-      y = log10(x);
-    end
+    oor = x <= 0;
+    y = x;
+    y(oor) = -1;
+    y(~oor) = log10(x(~oor));
   end
   conf.saltnpepper.params = [0 1 10 100 1000];
   conf.saltnpepper.func = @repeatability_saltnpepper;
@@ -70,4 +69,6 @@ function [conf] = repeatability_get_config()
   conf.saltnpepper.name_version = 'short_name';
   conf.saltnpepper.plot_x_transform = @mylog;
   conf.saltnpepper.xlabel = 'log_{10}(number of pixels)';
+  conf.saltnpepper.xticks = [-1 0 1 2 3];
+  conf.saltnpepper.xticklabels = {'none', '0', '1', '2', '3'};
 end
