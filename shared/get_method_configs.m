@@ -30,6 +30,7 @@ colormap = [
 177,89,40
 177,89,40
 177,89,40
+177,89,40
 ] ./ 256;
 
   config = get_config();
@@ -404,6 +405,21 @@ colormap = [
   methods(i).repeatability_matching_file = [prefix 'repeatability_matching.mat'];
   methods(i).order = 'descend';
   methods(i).extract = @(im,num) run_edge_boxes(im, num, 0.80, 0.90);
+  methods(i).num_candidates = true;
+  methods(i).color = colormap(i,:);
+  methods(i).is_baseline = false;
+  
+  i = numel(methods) + 1;
+  methods(i).name = 'Edge Boxes AR';
+  methods(i).short_name = 'EBAR';
+  prefix = [precomputed_prefix 'edge_boxes_AR/'];
+  methods(i).candidate_dir = [prefix 'mat'];
+  methods(i).repeatability_candidate_dir = [prefix 'repeatability_mat'];
+  methods(i).best_voc07_candidates_file = [prefix 'best_candidates.mat'];
+  methods(i).best_imagenet_candidates_file = [prefix 'best_candidates_imagenet.mat'];
+  methods(i).repeatability_matching_file = [prefix 'repeatability_matching.mat'];
+  methods(i).order = 'descend';
+  methods(i).extract = @run_edge_boxes_AR;
   methods(i).num_candidates = true;
   methods(i).color = colormap(i,:);
   methods(i).is_baseline = false;

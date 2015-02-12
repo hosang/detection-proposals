@@ -9,9 +9,10 @@ function plot_correlation_edge_boxes()
  
   IoUs = 0.5:0.05:0.9;
   custom_names = arrayfun(@(x) sprintf('%.2f', x), IoUs, 'UniformOutput', false);
+  custom_names = [custom_names {'AR'}];
   
   % select all edge box variants
-  method_selection = [13 14 16 19 20:24];
+  method_selection = [13 14 16 19 20:25];
   n_methods = numel(method_selection);
   [~,order] = sort({methods(method_selection).short_name});
   method_selection = method_selection(order);
@@ -38,7 +39,7 @@ function plot_correlation_edge_boxes()
   const_weights = ones(numel(T),1) ./ numel(T);
   integral_area = sum(R .* repmat(const_weights, [1, n_methods]), 1);
   methods = plot_weighted_area_color_coded(integral_area, ...
-    rcnn_AP, methods, custom_names, [0.3 0.6 45 55], true);
+    rcnn_AP, methods, custom_names, [0.3 0.6 45 55.5], true);
   hei = 7; wid = 7;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
   set(gcf, 'PaperPositionMode','auto');
@@ -64,6 +65,14 @@ function plot_correlation_edge_boxes()
 end
 
 function [methods] = plot_weighted_area_color_coded(areas, AP, methods, custom_names, axis_lim, use_rainbow)
+  additional_methods = methods(end);
+  additional_areas = areas(end);
+  additional_AP = AP(end);
+  
+  methods = methods(1:end-1);
+  areas = areas(1:end-1);
+  AP = AP(1:end-1);
+
   S=corrcoef([areas' AP']); s = S(1,end);
   figure;
 
@@ -71,27 +80,22 @@ function [methods] = plot_weighted_area_color_coded(areas, AP, methods, custom_n
   y = cat(1, areas, AP);
   xx = 0.5:0.002:0.9;
   yy = spline(x, y, xx);
-  if use_rainbow
-    dists = sqrt(sum((yy(:,2:end) - yy(:,1:end-1)) .^ 2, 1));
-    dists = dists .* linspace(6,1,numel(dists));
-    dists = cumsum(dists);
+  
+  dists = sqrt(sum((yy(:,2:end) - yy(:,1:end-1)) .^ 2, 1));
+  dists = dists .* linspace(6,1,numel(dists));
+  dists = cumsum(dists);
 
+  colors = rainbow(dists, max(dists));
+  n = numel(xx);
+  for i = 2:n
+    plot(yy(1,(i-1):i), yy(2,(i-1):i), 'Color', colors(i-1,:), 'LineWidth', 1.5);
+    if i == 2; hold on; end
+  end
 
-    colors = rainbow(dists, max(dists));
-    n = numel(xx);
-  %   colors = rainbow(1:(n-1),n-1);
-    for i = 2:n
-      plot(yy(1,(i-1):i), yy(2,(i-1):i), 'Color', colors(i-1,:), 'LineWidth', 1.5);
-      if i == 2; hold on; end
-    end
-
-    for i = 1:numel(methods)
-      [~,c_idx] = min((yy(1,:) - areas(i)) .^ 2 + (yy(2,:) - AP(i)) .^ 2);
-      c_idx = max(c_idx - 1, 1);
-      methods(i).color = colors(c_idx,:);
-    end
-  else
-    plot(yy(1,:), yy(2,:), '--', 'Color', [1 1 1]/3*2, 'LineWidth', 1.5);
+  for i = 1:numel(methods)
+    [~,c_idx] = min((yy(1,:) - areas(i)) .^ 2 + (yy(2,:) - AP(i)) .^ 2);
+    c_idx = max(c_idx - 1, 1);
+    methods(i).color = colors(c_idx,:);
   end
   hold on;
 
@@ -100,10 +104,14 @@ function [methods] = plot_weighted_area_color_coded(areas, AP, methods, custom_n
   for i = 1:numel(methods)
     plot(areas(i), AP(i), '.', 'MarkerSize', 20, 'Color', methods(i).color);
   end
+  for i = 1:numel(additional_methods)
+    plot(additional_areas(i), additional_AP(i), '.', 'MarkerSize', 20, 'Color', 'k');
+    additional_methods(i).color = [0 0 0];
+  end
   grid on;
   % move the labels aroundm so it looks nice
-  xpos = areas+.007;
-  ypos = AP;
+  xpos = [areas additional_areas]+.007;
+  ypos = [AP additional_AP];
   mirror_offset = 0.055;
   xpos(2) = xpos(2)-0.005;
   ypos(2) = ypos(2)-0.4;
@@ -116,6 +124,8 @@ function [methods] = plot_weighted_area_color_coded(areas, AP, methods, custom_n
   xlabel(sprintf('average recall')); axis(axis_lim)
   title(sprintf('correlation=%.3f',s)); ylabel('AP'); hold on;
   hold off
+  
+  methods = [methods additional_methods];
 end
 
 function cmap = rainbow(k,n)
