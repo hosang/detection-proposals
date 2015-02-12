@@ -21,7 +21,7 @@ function plot_correlation_voc07()
   % define algorithm names, IoU thresholds, recall values and AP scores
   nms={methods.name};
 
-  ld = load('data/pascal_voc07_test_llda_dpm_aps2.mat');
+  ld = load('data/pascal_voc07_test_llda_dpm_aps.mat');
   axis_lim = [0 0.975 20 34];
   % the following three lines reproduce Piotr's plots
 %   whitelist = [8 7 13 9 15 1 2 4 10 3 6 12];
@@ -65,7 +65,7 @@ function plot_weighted_area(areas, AP, nms, axis_lim)
   S=corrcoef([areas' AP']); s = S(1,end);
   figure; plot(areas, AP, 'dr'); grid on; text(areas+.015,AP,nms);
   xlabel(sprintf('weighted area under recall')); axis(axis_lim)
-  title(sprintf('correlation=%.3f',s)); ylabel('AP'); hold on;
+  title(sprintf('correlation=%.3f',s)); ylabel('mAP'); hold on;
   p=polyfit(areas,AP,1); line([0 1],[p(2),sum(p)],'Color',[1 1 1]/3); hold off
   end
 
@@ -78,7 +78,7 @@ function plot_weighted_area(areas, AP, nms, axis_lim)
   end
   grid on;
   xlabel(sprintf('average recall')); axis(axis_lim)
-  title(sprintf('correlation=%.3f',s)); ylabel('AP'); hold on;
+  title(sprintf('correlation=%.3f',s)); ylabel('mAP'); hold on;
   p=polyfit(areas,AP,1); line([0 1],[p(2),sum(p)],'Color',[1 1 1]/3); hold off
 end
 
@@ -89,7 +89,7 @@ function ploteroo(T, R, AP, nms, axis_lim)
   % plot AP versus recall at single best threshold t
   figure(); R1=R(t,:); plot(R1,AP,'dg'); grid on; text(R1+.015,AP,nms);
   xlabel(sprintf('recall at IoU=%.3f',T(t))); axis(axis_lim)
-  title(sprintf('correlation=%.3f',s)); ylabel('AP'); hold on;
+  title(sprintf('correlation=%.3f',s)); ylabel('mAP'); hold on;
   p=polyfit(R1,AP,1); line([0 1],[p(2),sum(p)],'Color',[1 1 1]/3); hold off
   % plot AP versus recall for a series of thresholds
   figure;
@@ -97,7 +97,7 @@ function ploteroo(T, R, AP, nms, axis_lim)
     subplot(4,5,t);
     R1=R(t,:); plot(R1,AP,'dr'); grid on; %text(R1+.015,AP,nms);
   xlabel(sprintf('recall at IoU=%.3f',T(t))); axis(axis_lim)
-  title(sprintf('correlation=%.3f',S(t))); ylabel('AP'); hold on;
+  title(sprintf('correlation=%.3f',S(t))); ylabel('mAP'); hold on;
   p=polyfit(R1,AP,1); line([0 1],[p(2),sum(p)],'Color',[1 1 1]/3); hold off
   end
   % compute correlation against optimal range of thrs(a:b)
@@ -106,7 +106,7 @@ function ploteroo(T, R, AP, nms, axis_lim)
   [s,t]=max(S(:)); [a,b]=ind2sub([n n],t); R1=mean(R(a:b,:),1);
   figure(); plot(R1,AP,'dg'); grid on; text(R1+.015,AP,nms);
   xlabel(sprintf('recall at IoU=%.3f-%.3f',T(a),T(b))); axis(axis_lim)
-  title(sprintf('correlation=%.3f',s)); ylabel('AP'); hold on;
+  title(sprintf('correlation=%.3f',s)); ylabel('mAP'); hold on;
   p=polyfit(R1,AP,1); line([0 1],[p(2),sum(p)],'Color',[1 1 1]/3); hold off
 end
 
