@@ -20,7 +20,7 @@ Benchmark your own method
 -------------------------
 
 1. Follow **Plot evaluation curves**.
-2. Write a wrapper function that takes an image and the number of proposal boxes and returns the proposals and scores. Proposals are a nx4 matrix, where n is the number of proposals and every row has the format `[x1 x2 y1 y2]` (x and y are 1-based image coordinates). See `method_wrappers/` for examples.
+2. Write a wrapper function that takes an image and the number of proposal boxes and returns the proposals and scores. Proposals are a nx4 matrix, where n is the number of proposals and every row has the format `[x1 y1 x2 y2]` (x and y are 1-based image coordinates). See `method_wrappers/` for examples.
 2. Add your method to `shared/get_method_configs.m`
 3. Run `compute_recall_candidates_voc07.m` passing only the config of your method as an argument. If your method is slow, you probably want to parallelize it in a cluster.
 4. Run `plot_recall_voc07.m`, curves will be in the figures subdirectory.
