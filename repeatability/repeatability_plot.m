@@ -38,7 +38,7 @@ function repeatability_plot(method_selection, only_caching, per_method_plot)
   num_bins = numel(box_size_bins) - 1;
   exp_config = repeatability_get_config();
 
-  
+  files_missing = false(size(methods));
   method_repeatability = cell(numel(methods), 1);
   for method_i = 1:numel(methods)
     method = methods(method_i);
@@ -46,7 +46,6 @@ function repeatability_plot(method_selection, only_caching, per_method_plot)
     try
       load(method.repeatability_matching_file);
     catch
-      files_missing = false;
       empties = cell(numel(images), 1);
       matching = struct('scale', empties, 'rotate', empties, 'light', empties, 'jpeg', empties, 'blur', empties, 'saltnpepper', empties);
       for im_i = 1:numel(images)
@@ -59,13 +58,13 @@ function repeatability_plot(method_selection, only_caching, per_method_plot)
           data = load(matfile);
         catch
           fprintf('couldn''t find file %s\n', matfile);
-          files_missing = true;
+          files_missing(method_i) = true;
           break;
         end
         matching(im_i) = data.matching;
         clear data;
       end
-      if files_missing
+      if files_missing(method_i)
         continue;
       end
       disp('computing statistics');
@@ -170,6 +169,9 @@ function repeatability_plot(method_selection, only_caching, per_method_plot)
     return;
   end
   
+  methods(files_missing) = [];;
+  method_repeatability(files_missing) = [];
+  
   [~,method_order] = sort([methods.sort_key]);
   methods = methods(method_order);
   method_repeatability = method_repeatability(method_order);
@@ -184,7 +186,7 @@ function repeatability_plot(method_selection, only_caching, per_method_plot)
     num_trafo = numel(method_repeatability{1}.trafo);
     for trafo_i = 1:num_trafo
       trafo_config = exp_config.(transformations{trafo_i});
-      num_params = numel(method_repeatability{method_i}.trafo(trafo_i).param_vals);
+      num_params = numel(method_repeatability{1}.trafo(trafo_i).param_vals);
       areas = zeros(numel(methods), num_params);
       for method_i = 1:numel(methods)
         areas(method_i, :) = method_repeatability{method_i}.trafo(trafo_i).area_under_recall;
