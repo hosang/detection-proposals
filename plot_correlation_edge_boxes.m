@@ -39,7 +39,7 @@ function plot_correlation_edge_boxes()
   const_weights = ones(numel(T),1) ./ numel(T);
   integral_area = sum(R .* repmat(const_weights, [1, n_methods]), 1);
   methods = plot_weighted_area_color_coded(integral_area, ...
-    rcnn_AP, methods, custom_names, [0.3 0.6 45 55.5], true);
+    rcnn_AP, methods, custom_names, [0.34 0.55 43 55.5], true);
   hei = 7; wid = 7;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
   set(gcf, 'PaperPositionMode','auto');
@@ -110,19 +110,17 @@ function [methods] = plot_weighted_area_color_coded(areas, AP, methods, custom_n
   end
   grid on;
   % move the labels aroundm so it looks nice
-  xpos = [areas additional_areas]+.007;
+  xpos = [areas additional_areas]+.010;
   ypos = [AP additional_AP];
-  mirror_offset = 0.055;
-  xpos(2) = xpos(2)-0.005;
-  ypos(2) = ypos(2)-0.4;
-  xpos(6) = xpos(6)-0.02;
-  ypos(6) = ypos(6)+0.6;
+  mirror_offset = 0.060;
+  xpos(1) = xpos(1)-mirror_offset;
+  xpos(2) = xpos(2)-mirror_offset;
+  xpos(6) = xpos(6)-mirror_offset;
   xpos(7) = xpos(7)-mirror_offset;
-  xpos(8) = xpos(8)-mirror_offset;
 
   text(xpos,ypos,custom_names);
   xlabel(sprintf('average recall')); axis(axis_lim)
-  title(sprintf('correlation=%.3f',s)); ylabel('AP'); hold on;
+  title(sprintf('correlation=%.3f',s)); ylabel('mAP'); hold on;
   hold off
   
   methods = [methods additional_methods];

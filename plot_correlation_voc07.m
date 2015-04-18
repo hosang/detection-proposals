@@ -10,7 +10,7 @@ function plot_correlation_voc07()
   n_methods = numel(methods);
   
   method_selection = 1:n_methods;
-  method_selection([14 16 19:24]) = [];
+  method_selection([14 16 19:25]) = [];
 
   % Recall matrix used for experiments nThresholds x nAlgorithms
   ld = load('data/pascal_voc07_test_recall.mat');
