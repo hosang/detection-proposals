@@ -1,5 +1,5 @@
 function [candidates, scores] = get_candidates(method_config, img_id, num_candidates, ...
-  allow_filtering, subdirlen, candidate_dir)
+  allow_filtering, subdirlen, candidate_dir, coco)
 
   if nargin < 4
     allow_filtering = true;
@@ -10,8 +10,11 @@ function [candidates, scores] = get_candidates(method_config, img_id, num_candid
   if nargin < 6
     candidate_dir = method_config.candidate_dir;
   end
+  if nargin < 7
+    coco = false;
+  end
 
-  [candidates, scores, rerun_num_candidates] = read_candidates_mat(candidate_dir, img_id, subdirlen);
+  [candidates, scores, rerun_num_candidates] = read_candidates_mat(candidate_dir, img_id, subdirlen, coco);
   if iscell(candidates) && iscell(scores)
 %     error('this shouldn''t be used');
     % we have candidates from multiple runs, with different num_candidates
