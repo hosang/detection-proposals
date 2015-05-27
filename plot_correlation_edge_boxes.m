@@ -24,26 +24,64 @@ function plot_correlation_edge_boxes()
   % Recall matrix used for experiments nThresholds x nAlgorithms
   ld = load('data/pascal_voc07_test_recall.mat');
   R = ld.recalls(method_selection,:)';
+  ARs = ld.ARs(method_selection)';
 
   T = ld.iou_thresholds;
 
   ld = load('data/pascal_voc07_test_rcnn_aps.mat');
   rcnn_AP = ld.aps(method_selection);
+  ld = load('data/pascal_voc07_test_frcn_aps.mat');
+  frcn_AP = ld.aps(method_selection);
+  ld = load('data/pascal_voc07_test_frcn_noregr_aps.mat');
+  frcn_noregr_AP = ld.aps(method_selection);
   
   % assign distinct colors to the methods
-  for i = 1:numel(methods)
+  n = numel(methods);
+  for i = 1:n
     methods(i).line_style = '-';
   end
   
   % average recall
-  const_weights = ones(numel(T),1) ./ numel(T);
-  integral_area = sum(R .* repmat(const_weights, [1, n_methods]), 1);
-  methods = plot_weighted_area_color_coded(integral_area, ...
-    rcnn_AP, methods, custom_names, [0.34 0.55 43 55.5], true);
+  mirror_offset = 0.060;
+  offsets = zeros(n, 2);
+  offsets(:,1) = 0.010;
+  offsets(1,1) = offsets(1,1)-mirror_offset;
+  offsets(2,1) = offsets(2,1)-mirror_offset;
+  offsets(6,1) = offsets(6,1)-mirror_offset;
+  offsets(7,1) = offsets(7,1)-mirror_offset;
+  methods = plot_weighted_area_color_coded(ARs, ...
+    rcnn_AP, methods, custom_names, [0.3 0.6 43 55.5], true, offsets);
   hei = 7; wid = 7;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
   set(gcf, 'PaperPositionMode','auto');
   printpdf('figures/RCNN_mAP_recall_area_voc07_edge_boxes.pdf');
+  
+  mirror_offset = 0.060;
+  offsets = zeros(n, 2);
+  offsets(:,1) = 0.010;
+  offsets(1:4,1) = offsets(1:4,1)-mirror_offset;
+  offsets(5,2) = offsets(5,2)+0.5;
+  offsets(6:9,2) = offsets(6:9,2)-0.5;
+  plot_weighted_area_color_coded(ARs, ...
+    frcn_AP, methods, custom_names, [0.3 0.6 43 65], false, offsets);
+  hei = 7; wid = 7;
+  set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
+  set(gcf, 'PaperPositionMode','auto');
+  printpdf('figures/FRCN_mAP_recall_area_voc07_edge_boxes.pdf');
+  
+  mirror_offset = 0.060;
+  offsets = zeros(n, 2);
+  offsets(:,1) = 0.010;
+  offsets(6:9,1) = offsets(6:9,1)-mirror_offset;
+  offsets(5:6,2) = offsets(5:6,2)+0.5;
+  offsets(1:4,2) = offsets(1:4,2)-0.6;
+  offsets(1:4,1) = offsets(1:4,1)-0.006;
+  plot_weighted_area_color_coded(ARs, ...
+    frcn_noregr_AP, methods, custom_names, [0.3 0.6 43 60], false, offsets);
+  hei = 7; wid = 7;
+  set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
+  set(gcf, 'PaperPositionMode','auto');
+  printpdf('figures/FRCN_noregr_mAP_recall_area_voc07_edge_boxes.pdf');
   
   % plot recall curves for each parameter setting
   fh = figure;
@@ -64,7 +102,8 @@ function plot_correlation_edge_boxes()
   printpdf('figures/recall_1000_voc07_edge_boxes.pdf')
 end
 
-function [methods] = plot_weighted_area_color_coded(areas, AP, methods, custom_names, axis_lim, use_rainbow)
+function [methods] = plot_weighted_area_color_coded(areas, AP, methods, ...
+  custom_names, axis_lim, reassign_colors, label_offsets)
   additional_methods = methods(end);
   additional_areas = areas(end);
   additional_AP = AP(end);
@@ -92,10 +131,12 @@ function [methods] = plot_weighted_area_color_coded(areas, AP, methods, custom_n
     if i == 2; hold on; end
   end
 
-  for i = 1:numel(methods)
-    [~,c_idx] = min((yy(1,:) - areas(i)) .^ 2 + (yy(2,:) - AP(i)) .^ 2);
-    c_idx = max(c_idx - 1, 1);
-    methods(i).color = colors(c_idx,:);
+  if reassign_colors
+    for i = 1:numel(methods)
+      [~,c_idx] = min((yy(1,:) - areas(i)) .^ 2 + (yy(2,:) - AP(i)) .^ 2);
+      c_idx = max(c_idx - 1, 1);
+      methods(i).color = colors(c_idx,:);
+    end
   end
   hold on;
 
@@ -109,14 +150,11 @@ function [methods] = plot_weighted_area_color_coded(areas, AP, methods, custom_n
     additional_methods(i).color = [0 0 0];
   end
   grid on;
-  % move the labels aroundm so it looks nice
-  xpos = [areas additional_areas]+.010;
+  % move the labels around, so it looks nice
+  xpos = [areas additional_areas];
   ypos = [AP additional_AP];
-  mirror_offset = 0.060;
-  xpos(1) = xpos(1)-mirror_offset;
-  xpos(2) = xpos(2)-mirror_offset;
-  xpos(6) = xpos(6)-mirror_offset;
-  xpos(7) = xpos(7)-mirror_offset;
+  xpos = xpos + label_offsets(:,1)';
+  ypos = ypos + label_offsets(:,2)';
 
   text(xpos,ypos,custom_names);
   xlabel(sprintf('average recall')); axis(axis_lim)

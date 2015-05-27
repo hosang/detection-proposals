@@ -4,9 +4,7 @@ function plot_detector_wiggle_voc07()
     83, 136, 173 ; ...
     219, 135, 45 ; ...
     218, 71, 56 ; ...
-    163, 163, 163 ; ...
     135, 130, 174 ; ...
-    225, 119, 174 ; ...
     142, 195, 129 ; ...
     138, 180, 66 ; ...
     223, 200, 51 ; ...
@@ -23,6 +21,12 @@ function plot_detector_wiggle_voc07()
   config(3).name = 'LM-LLDA bboxpred';
   config(3).func = @detector_wiggle_rcnn;
   config(3).filename = '/BS/candidate_detections/work/v1/pascal_voc07_test_dpm_bboxpred_scoremaps-3d.mat';
+  config(4).name = 'Fast R-CNN';
+  config(4).func = @detector_wiggle_from_iou_score;
+  config(4).filename = '/BS/candidate_detections/work/v1/pascal_voc07_test_frcn_iou_score.mat';
+  config(5).name = 'Fast R-CNN bboxpred';
+  config(5).func = @detector_wiggle_from_iou_score;
+  config(5).filename = '/BS/candidate_detections/work/v1/pascal_voc07_test_frcn_regr_iou_score.mat';
   
   autoscale = true;
 
@@ -41,7 +45,7 @@ function plot_detector_wiggle_voc07()
 %   bar(bin_centers', hists.bin_counts');
 %   legend({config.name}, 'Location', 'SouthEast');
   
-  if true
+  if false
     scale_factors = [0.8182    0.8485    0.8864    0.9242    0.9621    1.0000    1.0455    1.0833    1.1288  1.1742    1.2273];
     x = (-5:5) .* 4*227/128;
     y = x;
@@ -110,10 +114,10 @@ function plot_histograms(config, bin_centers, bin_edges, avg_scores, class_avg_s
   legend({config.name}, 'Location', 'SouthEast');
   xlabel('IoU with GT'); ylabel('detector score');
   xlim([min(bin_edges), max(bin_edges)]);
-%   hei = 8; wid = 8.5;
-%   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
-%   set(gcf, 'PaperPositionMode','auto');
-%   printpdf('figures/detector_scoremaps_voc07.pdf');
+  hei = 8; wid = 12;
+  set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
+  set(gcf, 'PaperPositionMode','auto');
+  printpdf('figures/detector_scoremaps_voc07.pdf');
   
   fh_per_class = figure;
   for c = 1:20
