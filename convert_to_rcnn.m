@@ -26,22 +26,34 @@ function convert(config, dest_dir, num_proposals)
 
   fprintf('\nconverting %d boxes of %s...\n', num_proposals, config.name);
   test = load('data/pascal_voc07_test_annotations.mat');
-%   train = load('data/pascal_voc07_trainval_annotations.mat');
+  train = load('data/pascal_voc07_trainval_annotations.mat');
   save_to([dest_dir '/voc_2007_test.mat'], config, test, num_proposals);
-%   save_to([dest_dir '/voc_2007_trainval.mat'], config, train, num_proposals);
+  save_to([dest_dir '/voc_2007_trainval.mat'], config, train, num_proposals);
 end
 
 function save_to(output_filename, config, image_set, num_proposals)
-  images = {image_set.impos.im};
-  boxes = cell(size(images));
-  for i = 1:numel(images)
-    [boxes{i}, ~] = get_candidates(config, images{i}, ...
-        num_proposals);
-    % change format from [x1 y1 x2 y2] to [y1 x1 y2 x2]
-    if ~isempty(boxes{i})
-      boxes{i} = boxes{i}(:, [2 1 4 3]);
-    end
+  try
+    load(output_filename, 'images', 'boxes');
+    % success
+    fprintf('already exported\n');
+    return;
+  catch
   end
-  save(output_filename, 'images', 'boxes');
-  fprintf('wrote %s\n', output_filename);
+  
+  try
+    images = {image_set.impos.im};
+    boxes = cell(size(images));
+    for i = 1:numel(images)
+      [boxes{i}, ~] = get_candidates(config, images{i}, ...
+          num_proposals);
+      % change format from [x1 y1 x2 y2] to [y1 x1 y2 x2]
+      if ~isempty(boxes{i})
+        boxes{i} = boxes{i}(:, [2 1 4 3]);
+      end
+    end
+    save(output_filename, 'images', 'boxes');
+    fprintf('wrote %s\n', output_filename);
+  catch
+    fprintf('error! probably not computed yet\n');
+  end
 end
