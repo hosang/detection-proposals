@@ -25,7 +25,7 @@ function repeatability_plot(method_selection, only_caching, per_method_plot)
   if nargin > 0
     methods = methods(method_selection);
   else
-    methods([7 9 14 16 19:24]) = [];
+    methods([7 9 14 16 19:25]) = [];
   end
   
   load('data/pascal_voc07_test_annotations.mat');
