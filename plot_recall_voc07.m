@@ -8,7 +8,7 @@ function plot_recall_voc07()
 
   testset = load('data/pascal_voc07_test_annotations.mat');
   methods = get_method_configs();
-  methods([14 16 19:24]) = [];
+  methods([14 16 19:25]) = [];
   
   compute_best_candidates(testset, methods);
   

@@ -13,7 +13,9 @@ function plot_size_distribution()
   
   
   methods = get_method_configs();
-  methods([14 16 19:24]) = [];
+  methods([14 16 19:25]) = [];
+  
+  handles = [];
   
   histograms = zeros(numel(methods), num_bins);
   legend_labels = cell(numel(methods), 1);
@@ -21,7 +23,7 @@ function plot_size_distribution()
   for method_i = 1:numel(methods)
     method = methods(method_i);
     fprintf('method: %s\n', method.name);
-    legend_labels{method_i} = sprintf('%-2s ', method.short_name, method.name);
+    legend_labels{method_i} = method.name;
     cache_file = fullfile(method.candidate_dir, 'size_hist.mat');
     try
       data = load(cache_file);
@@ -74,7 +76,7 @@ function plot_size_distribution()
     if ~isempty(methods(i).line_style)
       line_style = methods(i).line_style;
     end
-    plot(box_size_bin_centers, histograms(i,:), '.', 'LineWidth', 1.5, 'Color', methods(i).color, 'MarkerSize', 10, 'LineStyle', line_style);
+    handles(end+1) = plot(box_size_bin_centers, histograms(i,:), '.', 'LineWidth', 1.5, 'Color', methods(i).color, 'MarkerSize', 10, 'LineStyle', line_style);
   end
   
   gt_w = [pos.x2] - [pos.x1] + 1;
@@ -88,7 +90,7 @@ function plot_size_distribution()
   assert(max(arg_hist) <= numel(box_size_bins) - 1);
   gt_h = gt_h(1:end-1)';
   gt_h = gt_h / sum(gt_h);
-  plot(box_size_bin_centers, gt_h, '.-', 'LineWidth', 1.5, 'Color', 'black', 'MarkerSize', 10);
+  handles(end+1) = plot(box_size_bin_centers, gt_h, '.-', 'LineWidth', 1.5, 'Color', 'black', 'MarkerSize', 10);
   legend_labels{end+1} = 'Ground truth VOC 2007';
   
   val = load('data/ILSVRC2013_val_annotations.mat');
@@ -104,10 +106,25 @@ function plot_size_distribution()
   assert(max(arg_hist) <= numel(box_size_bins) - 1);
   gt_h = gt_h(1:end-1)';
   gt_h = gt_h / sum(gt_h);
-  plot(box_size_bin_centers, gt_h, '.--', 'LineWidth', 1.5, 'Color', 'black', 'MarkerSize', 10);
+  handles(end+1) = plot(box_size_bin_centers, gt_h, '.--', 'LineWidth', 1.5, 'Color', 'black', 'MarkerSize', 10);
   legend_labels{end+1} = 'Ground truth ILSVRC 2013';
   
-%   legend(legend_labels);
+  val = load('data/coco2014_val_annotations.mat');
+  pos = val.pos;
+  gt_w = [pos.x2] - [pos.x1] + 1;
+  gt_h = [pos.y2] - [pos.y1] + 1;
+  areas = gt_w .* gt_h;
+  for i = 1:numel(pos)
+    areas(i) = sqrt(areas(i) / prod(pos(i).img_size));
+  end
+  [gt_h,arg_hist] = histc(areas, box_size_bins);
+  assert(min(arg_hist) >= 1);
+  assert(max(arg_hist) <= numel(box_size_bins) - 1);
+  gt_h = gt_h(1:end-1)';
+  gt_h = gt_h / sum(gt_h);
+  handles(end+1) = plot(box_size_bin_centers, gt_h, '^-', 'LineWidth', 1.5, 'Color', 'black', 'MarkerSize', 5);
+  legend_labels{end+1} = 'Ground truth COCO 2014';
+  
   xlabel('sqrt(relative candidate size)');
   ylabel('frequency');
   hei = 10;
@@ -115,6 +132,15 @@ function plot_size_distribution()
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
   set(gcf, 'PaperPositionMode','auto');
   printpdf('figures/candidate_size_histogram.pdf')
+  
+  
+  legend(legend_labels);
+  legend boxoff;
+  for i = 1:numel(handles)
+    set(handles(i), 'visible', 'off');
+  end
+  set(gca, 'visible', 'off');
+  printpdf('figures/candidate_size_histogram_legend.pdf')
 
 end
 
