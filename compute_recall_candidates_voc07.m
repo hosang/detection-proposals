@@ -1,4 +1,4 @@
-function recall_compute_candidates_voc07(method_configs, images)
+function compute_recall_candidates_voc07(method_configs, images)
   % Run proposal methods over the pascal test set.
   %   method_configs  are the configs of the methods you want to run, as
   %                   provided by get_method_configs()
@@ -15,9 +15,13 @@ function recall_compute_candidates_voc07(method_configs, images)
   if nargin < 2
     % default to running on the full test set
     testset = load('data/pascal_voc07_test_annotations.mat');
-    images = {testset.impos.im};
+%     trainval = load('data/pascal_voc07_trainval_annotations.mat');
+    data_config = get_config();
+    images = cellfun(@(id) sprintf(data_config.pascal_images, id), {testset.impos.im}, ...
+      'UniformOutput', false);
     clear testset;
   end
+  
   
   % seed to milliseconds
   seed = str2double(datestr(now,'HHMMSSFFF'));
