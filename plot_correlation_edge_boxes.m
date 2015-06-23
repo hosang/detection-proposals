@@ -13,7 +13,6 @@ function plot_correlation_edge_boxes()
   
   % select all edge box variants
   method_selection = [13 14 16 19 20:25];
-  n_methods = numel(method_selection);
   [~,order] = sort({methods(method_selection).short_name});
   method_selection = method_selection(order);
   methods = methods(method_selection);
@@ -50,7 +49,7 @@ function plot_correlation_edge_boxes()
   offsets(6,1) = offsets(6,1)-mirror_offset;
   offsets(7,1) = offsets(7,1)-mirror_offset;
   methods = plot_weighted_area_color_coded(ARs, ...
-    rcnn_AP, methods, custom_names, [0.3 0.6 43 55.5], true, offsets);
+    rcnn_AP, methods, custom_names, [0.3 0.6 43 57], true, offsets);
   hei = 7; wid = 7;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
   set(gcf, 'PaperPositionMode','auto');
@@ -63,7 +62,7 @@ function plot_correlation_edge_boxes()
   offsets(5,2) = offsets(5,2)+0.5;
   offsets(6:9,2) = offsets(6:9,2)-0.5;
   plot_weighted_area_color_coded(ARs, ...
-    frcn_AP, methods, custom_names, [0.3 0.6 43 65], false, offsets);
+    frcn_AP, methods, custom_names, [0.3 0.6 45 67], false, offsets);
   hei = 7; wid = 7;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
   set(gcf, 'PaperPositionMode','auto');
@@ -77,7 +76,7 @@ function plot_correlation_edge_boxes()
   offsets(1:4,2) = offsets(1:4,2)-0.6;
   offsets(1:4,1) = offsets(1:4,1)-0.006;
   plot_weighted_area_color_coded(ARs, ...
-    frcn_noregr_AP, methods, custom_names, [0.3 0.6 43 60], false, offsets);
+    frcn_noregr_AP, methods, custom_names, [0.3 0.6 44 61], false, offsets);
   hei = 7; wid = 7;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
   set(gcf, 'PaperPositionMode','auto');
@@ -88,16 +87,28 @@ function plot_correlation_edge_boxes()
   plot_overlap_recall_curve({methods.best_voc07_candidates_file}, ...
     methods, 1000, fh, true, 'NorthEast', false, ...
     custom_names);
-  lh = legend(custom_names);
+  [lh, hobj1] = legend(custom_names);
   legend boxoff;
+  
   hei = 7;
   wid = 7;
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
   set(gcf, 'PaperPositionMode','auto');
+  
+  % change the length of the line samples in the legend
+  textobj = findobj(hobj1, 'type', 'line');
+  for i = 1:numel(textobj)
+    lineXData = get(textobj(i), 'XData');
+    lineXData(1) = lineXData(1) + 0.3;
+    set(textobj(i), 'XData', lineXData);
+  end
+  
+  % move the legend more outside
   P = get(lh, 'Position');
-  P(1) = P(1) + 0.11;
-  P(2) = P(2) + 0.1;
+  P(1) = P(1) + 0.05;
+  P(2) = P(2) + 0.05;
   set(lh, 'Position', P);
+  
 
   printpdf('figures/recall_1000_voc07_edge_boxes.pdf')
 end
@@ -158,8 +169,14 @@ function [methods] = plot_weighted_area_color_coded(areas, AP, methods, ...
 
   text(xpos,ypos,custom_names);
   xlabel(sprintf('average recall')); axis(axis_lim)
-  title(sprintf('correlation=%.3f',s)); ylabel('mAP'); hold on;
+  ylabel('mAP'); hold on;
   hold off
+  
+  % move the title inside of the plot
+  v = axis;
+  handle = title(sprintf('correlation=%.3f',s));
+  titlepos = [(v(2)-v(1))*0.5+v(1), (v(4)-v(3))*0.91+v(3), 0];
+  set(handle, 'Position', titlepos);
   
   methods = [methods additional_methods];
 end

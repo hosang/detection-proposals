@@ -61,34 +61,40 @@ function plot_correlation_voc07()
   
   % Average recall plots
   plot_weighted_area_color_coded(ARs(method_selection), ...
-    llda_dpm_AP(method_selection), methods(method_selection), [0 0.6 10 34]);
+    llda_dpm_AP(method_selection), methods(method_selection), [0 0.6 10 38]);
   scale_and_save('figures/LLDA_DPM_mAP_recall_area_voc07.pdf');
   
+  axlim = [0 0.6 12 67];
   plot_weighted_area_color_coded(ARs(method_selection), ...
-    rcnn_AP(method_selection), methods(method_selection), [0 0.6 10 60]);
+    rcnn_AP(method_selection), methods(method_selection), axlim);
   scale_and_save('figures/RCNN_mAP_recall_area_voc07.pdf');
   
   plot_weighted_area_color_coded(ARs(method_selection), ...
-    frcn_AP(method_selection), methods(method_selection), [0 0.6 15 65]);
+    frcn_AP(method_selection), methods(method_selection), axlim);
   scale_and_save('figures/FRCN_mAP_recall_area_voc07.pdf');
   
+  frcn_AR = mean(R(T>=0.5 & T<=0.7,:), 1);
+  plot_weighted_area_color_coded(frcn_AR(method_selection)', ...
+    frcn_AP(method_selection), methods(method_selection), [0 1 12 67]);
+  scale_and_save('figures/FRCN_mAP_recall_area0.5_0.8_voc07.pdf');
+  
   plot_weighted_area_color_coded(ARs(method_selection), ...
-    frcn_noregr_AP(method_selection), methods(method_selection), [0 0.6 15 65]);
+    frcn_noregr_AP(method_selection), methods(method_selection), axlim);
   scale_and_save('figures/FRCN_noregr_mAP_recall_area_voc07.pdf');
   
   % Average recall plots per class
   per_class_method_selection = method_selection;
   plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
-    llda_dpm_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 60]);
+    llda_dpm_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 65]);
   scale_and_save('figures/LLDA_DPM_correlation_per_class_lines_voc07.pdf', 6, 7);
   plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
-    rcnn_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 80]);
+    rcnn_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 85]);
   scale_and_save('figures/RCNN_correlation_per_class_lines_voc07.pdf', 6, 7);
   plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
-    frcn_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 85]);
+    frcn_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 90]);
   scale_and_save('figures/FRCN_correlation_per_class_lines_voc07.pdf', 6, 7);
   plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
-    frcn_noregr_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 85]);
+    frcn_noregr_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 90]);
   scale_and_save('figures/FRCN_noregr_correlation_per_class_lines_voc07.pdf', 6, 7);
   
   plot_correlation_per_class(ARs_per_class(:,per_class_method_selection), ...
@@ -167,11 +173,11 @@ function plot_correlation_per_class(AR_per_class, AP_per_class, colorful)
     bar(S, 'FaceColor', [31,120,180]/256, 'EdgeColor', [31,120,180]/256);
   end
 %   bar(S);
-  set(gca,'XTick',1:numel(classes),'XTickLabel',classes);
+  set(gca,'XTick',(1:numel(classes))-0.3,'XTickLabel',classes);
   set(gca,'XTickLabelRotation',60);
   xlim([0,21]);
-  ylim([0.7 1]);
-  ylabel('correlation with mAP');
+  ylim([0.6 1]);
+  ylabel('correlation with AP');
 end
 
 function plot_AR_per_class(AR_per_class, AP_per_class, methods, axis_lim)
@@ -182,15 +188,21 @@ function plot_AR_per_class(AR_per_class, AP_per_class, methods, axis_lim)
   figure;
   for c = 1:numel(classes), cls = classes{c};
     for i = 1:numel(methods)
-      plot(AR_per_class(c,i), AP_per_class(c,i), '.', 'MarkerSize', 10, 'Color', colors(c,:), 'LineWidth', 1.5);
+      plot(AR_per_class(c,i), AP_per_class(c,i), 'o', 'MarkerSize', 3, 'Color', colors(c,:), 'LineWidth', 0.5);
       hold on;
     end
     p=polyfit(AR_per_class(c,:),AP_per_class(c,:),1); line([0 1],[p(2),sum(p)],'Color',colors(c,:));
   end
   grid on;
   xlabel(sprintf('average recall')); 
-  title(sprintf('correlation=%.3f',s)); ylabel('mAP'); hold off;
+  ylabel('AP'); hold off;
   axis(axis_lim); 
+  
+  % move the title inside of the plot
+  v = axis;
+  handle = title(sprintf('correlation=%.3f',s));
+  titlepos = [(v(2)-v(1))*0.5+v(1), (v(4)-v(3))*0.89+v(3), 0];
+  set(handle, 'Position', titlepos);
 end
 
 function plot_weighted_area_color_coded(areas, AP, methods, axis_lim)
@@ -203,8 +215,15 @@ function plot_weighted_area_color_coded(areas, AP, methods, axis_lim)
   end
   grid on;
   xlabel(sprintf('average recall')); axis(axis_lim)
-  title(sprintf('correlation=%.3f',s)); ylabel('mAP'); hold on;
+%   title(sprintf('correlation=%.3f',s));
+  ylabel('mAP');
   p=polyfit(areas,AP,1); line([0 1],[p(2),sum(p)],'Color',[1 1 1]/3); hold off
+  
+  % move the title inside of the plot
+  v = axis;
+  handle = title(sprintf('correlation=%.3f',s));
+  titlepos = [(v(2)-v(1))*0.5+v(1), (v(4)-v(3))*0.89+v(3), 0];
+  set(handle, 'Position', titlepos);
 end
 
 function ploteroo(T, R, AP, nms, axis_lim)
@@ -239,6 +258,6 @@ function plot_correlation_over_recall(T, R, AP, nms, axis_lim)
   S=corrcoef([R' AP']); S=S(1:end-1,end);
   figure(); xlim([T(1), T(end-1)]);
   plot(T,S,'.-', 'Color', [31,120,180]/256, 'MarkerSize', 20);
-  xlabel('IoU overlap threshold'); ylabel('correlation with mAP'); grid on;
   axis(axis_lim);
+  xlabel('IoU overlap threshold'); ylabel('correlation with mAP'); grid on;
 end
