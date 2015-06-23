@@ -20,7 +20,7 @@ function plot_legend(method_configs)
       'LineWidth', 1.5, 'LineStyle', style);
   end
   lh = legend({method_configs.name});
-%   legend boxoff;
+  legend boxoff;
   for i = 1:n_methods
     set(handles(i), 'visible', 'off');
   end
