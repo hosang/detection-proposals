@@ -84,31 +84,41 @@ function plot_correlation_voc07()
   
   % Average recall plots per class
   per_class_method_selection = method_selection;
-  plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
-    llda_dpm_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 65]);
-  scale_and_save('figures/LLDA_DPM_correlation_per_class_lines_voc07.pdf', 6, 7);
-  plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
-    rcnn_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 85]);
-  scale_and_save('figures/RCNN_correlation_per_class_lines_voc07.pdf', 6, 7);
-  plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
-    frcn_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 90]);
-  scale_and_save('figures/FRCN_correlation_per_class_lines_voc07.pdf', 6, 7);
-  plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
-    frcn_noregr_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 90]);
-  scale_and_save('figures/FRCN_noregr_correlation_per_class_lines_voc07.pdf', 6, 7);
+%   plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
+%     llda_dpm_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 65]);
+%   scale_and_save('figures/LLDA_DPM_correlation_per_class_lines_voc07.pdf', 6, 7);
+%   plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
+%     rcnn_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 85]);
+%   scale_and_save('figures/RCNN_correlation_per_class_lines_voc07.pdf', 6, 7);
+%   plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
+%     frcn_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 90]);
+%   scale_and_save('figures/FRCN_correlation_per_class_lines_voc07.pdf', 6, 7);
+%   plot_AR_per_class(ARs_per_class(:,per_class_method_selection), ...
+%     frcn_noregr_AP_per_class(:,per_class_method_selection), methods(per_class_method_selection), [0 .85 0 90]);
+%   scale_and_save('figures/FRCN_noregr_correlation_per_class_lines_voc07.pdf', 6, 7);
   
-  plot_correlation_per_class(ARs_per_class(:,per_class_method_selection), ...
-    llda_dpm_AP_per_class(:,per_class_method_selection), true);
-  scale_and_save('figures/LLDA_DPM_correlation_per_class_colorbars_voc07.pdf', 6, 12);
-  plot_correlation_per_class(ARs_per_class(:,per_class_method_selection), ...
-    rcnn_AP_per_class(:,per_class_method_selection), true);
-  scale_and_save('figures/RCNN_correlation_per_class_colorbars_voc07.pdf', 6, 12);
-  plot_correlation_per_class(ARs_per_class(:,per_class_method_selection), ...
-    frcn_AP_per_class(:,per_class_method_selection), true);
-  scale_and_save('figures/FRCN_correlation_per_class_colorbars_voc07.pdf', 6, 12);
-  plot_correlation_per_class(ARs_per_class(:,per_class_method_selection), ...
-    frcn_noregr_AP_per_class(:,per_class_method_selection), true);
-  scale_and_save('figures/FRCN_noregr_correlation_per_class_colorbars_voc07.pdf', 6, 12);
+%   plot_correlation_per_class(ARs_per_class(:,per_class_method_selection), ...
+%     llda_dpm_AP_per_class(:,per_class_method_selection), true);
+%   scale_and_save('figures/LLDA_DPM_correlation_per_class_colorbars_voc07.pdf', 6, 12);
+%   plot_correlation_per_class(ARs_per_class(:,per_class_method_selection), ...
+%     rcnn_AP_per_class(:,per_class_method_selection), true);
+%   scale_and_save('figures/RCNN_correlation_per_class_colorbars_voc07.pdf', 6, 12);
+%   plot_correlation_per_class(ARs_per_class(:,per_class_method_selection), ...
+%     frcn_AP_per_class(:,per_class_method_selection), true);
+%   scale_and_save('figures/FRCN_correlation_per_class_colorbars_voc07.pdf', 6, 12);
+%   plot_correlation_per_class(ARs_per_class(:,per_class_method_selection), ...
+%     frcn_noregr_AP_per_class(:,per_class_method_selection), true);
+%   scale_and_save('figures/FRCN_noregr_correlation_per_class_colorbars_voc07.pdf', 6, 12);
+  
+  plot_correlation_per_class_multi(ARs_per_class(:,per_class_method_selection), ...
+    cat(1, llda_dpm_AP_per_class(:,per_class_method_selection), ...
+           rcnn_AP_per_class(:,per_class_method_selection), ...
+           frcn_noregr_AP_per_class(:,per_class_method_selection), ...
+           frcn_AP_per_class(:,per_class_method_selection)), ...
+    {'LM-LLDA bbpred', 'R-CNN', 'Fast R-CNN', 'Fast R-CNN bbpred'}, ...
+    'bars');
+  scale_and_save('figures/all_detectors_correlation_per_class_colorbars_voc07.pdf', 7, 16);
+
   
 %   plot_correlation_per_class(ARs_per_class(:,per_class_method_selection), ...
 %     llda_dpm_AP_per_class(:,per_class_method_selection), false);
@@ -119,8 +129,9 @@ function plot_correlation_voc07()
 end
 
 function scale_and_save(output_filename, hei, wid)
-  if nargin < 2, hei = 6; end
-  if nargin < 3, wid = 6; end
+  s = 0.13;
+  if nargin < 2, hei = 40*s; end
+  if nargin < 3, wid = 45*s; end
   set(gcf, 'Units','centimeters', 'Position',[0 0 wid hei]);
   set(gcf, 'PaperPositionMode','auto');
   printpdf(output_filename);
@@ -155,6 +166,55 @@ function colors = class_colors()
 [138,75,38],
 [189,175,70],
 [82,92,146]]/255;
+end
+
+function plot_correlation_per_class_multi(AR_per_class, AP_per_class, legend_strs, type)
+colors = [
+24,98,169
+236,178,0
+30,129,43
+211,118,166
+]./255;
+% 255, 197, 108
+% 110, 197, 233
+% 0, 58, 111
+% 255, 89, 89
+
+  load('data/short_classes.mat');
+  n = numel(classes);
+  n_detectors = numel(legend_strs);
+  
+  S=corrcoef([AR_per_class' AP_per_class']);
+  Spd = cell(1, n_detectors);
+  for i = 1:n_detectors
+    Spd{i} = diag(S((i*n+1):((i+1)*n), 1:n));
+  end
+  Spd = cat(2, Spd{:});
+  
+  figure;
+  if strcmp(type, 'lines')
+    for i = 1:n_detectors
+      plot(1:n, Spd(:,i), '.-', 'Color', colors(i,:));
+      if i == 1; hold on; end
+    end
+    
+    legend(legend_strs);
+  elseif strcmp(type, 'bars')
+    hb = bar(1:n, Spd);
+    for i = 1:n_detectors
+      set(hb(i), 'FaceColor', colors(i,:), 'EdgeColor', colors(i,:));
+    end
+    
+    set(gca,'XTick',(1:numel(classes))-0.3,'XTickLabel',classes);
+    set(gca,'XTickLabelRotation',60);
+    xlim([0,21]);
+    ylim([0.6 1]);
+    ylabel('correlation with AP');
+    
+    legend(legend_strs, 'Location', 'SouthEast');
+  else
+    error('unknown type');
+  end
 end
 
 function plot_correlation_per_class(AR_per_class, AP_per_class, colorful)
