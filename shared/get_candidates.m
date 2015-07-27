@@ -28,6 +28,7 @@ function [candidates, scores] = get_candidates(method_config, img_id, num_candid
     scores = scores{idx};
   end
   
+  
   if allow_filtering
     if strcmp(method_config.order, 'none')
       % nothing to do
@@ -57,6 +58,9 @@ function [candidates, scores] = get_candidates(method_config, img_id, num_candid
       candidates = candidates(argsort,:);
     end
     
+    % remove duplicates on the fly
+    [candidates, scores] = deduplicate_proposals(candidates, scores);
+
     num_candidates = min(num_candidates, size(candidates, 1));
     candidates = candidates(1:num_candidates,:);
     if numel(scores) > 0
