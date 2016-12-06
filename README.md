@@ -1,7 +1,7 @@
 
 # Detection Proposals
 
-Evaluation of detection proposal algorithms. The code belongs to the BMVC paper **How good are detection proposals, really?** and an upcoming journal paper. Have a look at the [Project Page](http://www.mpi-inf.mpg.de/departments/computer-vision-and-multimodal-computing/research/object-recognition-and-scene-understanding/how-good-are-detection-proposals-really/) for more information.
+Evaluation of detection proposal algorithms. The code belongs to the BMVC paper **How good are detection proposals, really?** and an the PAMI paper **What makes for effective detection proposals?**. Have a look at the [Project Page](http://www.mpi-inf.mpg.de/departments/computer-vision-and-multimodal-computing/research/object-recognition-and-scene-understanding/how-good-are-detection-proposals-really/) for more information.
 
 
 Please contact me if you're having trouble with the code!
